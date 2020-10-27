@@ -99,11 +99,14 @@ class LeducGame(cfr.AbstractGame):
         if key not in i_map:
             cur_round_action = self._current_round(history)
             if cur_round_action.count("r") >= 2:
-                info_set = cfr.InformationSet(key, 2)
+                info_set = cfr.InformationSet(key, 2, ['f', 'c'])
             else:
-                info_set = cfr.InformationSet(key, 3)
+                info_set = cfr.InformationSet(key, 3, ['f', 'c' , 'r'])
             i_map[key] = info_set
         return i_map[key]
+
+    def get_chance_reslut(self, history: str) -> str:
+        return history + "C"
 
     def __str__(self):
         return str(self.deck)

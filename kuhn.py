@@ -55,11 +55,14 @@ class KuhnGame(cfr.AbstractGame):
         key = hand + history
         if key not in i_map:
             if history.count("r") == 1:
-                info_set = cfr.InformationSet(key, 2)
+                info_set = cfr.InformationSet(key, 2, ["f", "c"])
             else:
-                info_set = cfr.InformationSet(key, 3)
+                info_set = cfr.InformationSet(key, 3, ["f", "c" , "r"])
             i_map[key] = info_set
         return i_map[key]
+
+    def get_chance_reslut(self, hisotry: str) -> str:
+        return None
 
 def train():
     deck = ['J' , 'Q', 'K']

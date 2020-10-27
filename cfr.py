@@ -1,13 +1,14 @@
 from abc import ABCMeta, abstractmethod
-from typing import Dict
+from typing import Dict, List
 import numpy as np
 
-# sample frmo https://justinsermeno.com/posts/cfr/
+# sample from https://justinsermeno.com/posts/cfr/
 
 class InformationSet():
-    def __init__(self, key, num_actions):
+    def __init__(self, key, num_actions : int, action_types: List[str]):
         self.key = key
         self.num_actions = num_actions
+        self.action_types = action_types
         self.regret_sum = np.zeros(num_actions)
         self.strategy_sum = np.zeros(num_actions)
         self.strategy = np.repeat(1/num_actions, num_actions)
@@ -76,23 +77,26 @@ class AbstractGame(metaclass=ABCMeta):
     @abstractmethod
     def get_info_set(self, i_map : Dict[str,InformationSet], history) -> InformationSet:
         return None
+    @abstractmethod
+    def get_chance_reslut(self, hisotry: str) -> str:
+        return None
 
 
 def cfr(game: AbstractGame, i_map : Dict[str,InformationSet], history : str,
         p0 : float, p1:float, relearn_player: int) -> float:
     if game.is_terminal(history):
-#        print(history, game, game.payoff(history))
         return game.payoff(history)
     if game.is_chance(history):
-        return cfr(game, i_map, history + "C", p0, p1, relearn_player)
+        next_history = game.get_chance_reslut(history)
+        return cfr(game, i_map, next_history, p0, p1, relearn_player)
     info_set = game.get_info_set(i_map, history)
     strategy = info_set.strategy
     action_utils = np.zeros(info_set.num_actions)
-    action_type = ['f', 'c' , 'r']
+    action_types = info_set.action_types
     active_player = game.active_player(history)
     for select in range(info_set.num_actions):
-        next_history = history + action_type[select]
-        next_player = game.next_player(history, action_type[select])
+        next_history = history + action_types[select]
+        next_player = game.next_player(history, action_types[select])
         mul = 1 if active_player == next_player else -1
         if active_player == 0:
             action_utils[select] = mul * cfr(game, i_map, next_history, p0 * strategy[select], p1, relearn_player)
