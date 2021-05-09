@@ -66,7 +66,7 @@ class AbstractGame(metaclass=ABCMeta):
     def next_player(self, history: str, action : str) -> int:
         return 0
     @abstractmethod
-    def payoff(self, history: str) -> int:
+    def payoff(self, history: str) -> float:
         return 0
     @abstractmethod
     def is_terminal(self, history) -> bool:
